@@ -34,7 +34,7 @@ const Payslip = () => (
                 <TableCell className="px-6 py-[17.75px] font-outfit font-normal text-sm text-[#45556C]">{fmt(row.basicSalary)}</TableCell>
                 <TableCell className="px-6 py-[17.75px] font-outfit font-medium text-sm text-[#0F172B]">{fmt(row.netSalary)}</TableCell>
                 <TableCell className="px-6 py-4">
-                  <Button size="sm" variant="outline" onClick={() => window.open(row.downloadUrl, '_blank')}>
+                  <Button size="sm" variant="outline" className="text-blue-600 border-blue-200 hover:bg-blue-50" onClick={() => window.open(row.downloadUrl, '_blank')}>
                     <DownloadIcon className="size-3.5" /> Download
                   </Button>
                 </TableCell>

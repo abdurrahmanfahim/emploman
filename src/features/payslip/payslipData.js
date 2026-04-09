@@ -1,4 +1,11 @@
-export const payslips = [
-  { id: '1', period: 'March 2026',   basicSalary: 50000, netSalary: 59000, downloadUrl: '#' },
-  { id: '2', period: 'February 2026', basicSalary: 50000, netSalary: 57500, downloadUrl: '#' },
-]
+import { dummyPayslipData } from '@/dummyData'
+
+const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+
+export const payslips = dummyPayslipData.map(p => ({
+  id: p._id,
+  period: `${monthNames[p.month - 1]} ${p.year}`,
+  basicSalary: p.basicSalary,
+  netSalary: p.netSalary,
+  downloadUrl: '#',
+}))

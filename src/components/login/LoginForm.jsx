@@ -1,16 +1,17 @@
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import LoginLeft from "./LoginLeft"
-import { ArrowLeftIcon } from "lucide-react"
+import { ArrowLeftIcon, EyeOffIcon, EyeIcon, Loader2Icon } from "lucide-react";
 import { useState } from "react";
-import { EyeOffIcon } from "lucide-react";
-import { EyeIcon } from "lucide-react";
-import { Loader2Icon } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+import { dummyAdminDashboardData, dummyEmployeeDashboardData } from "@/dummyData";
 
 const LoginForm = ({ role, title, subtitle }) => {
+  const navigate = useNavigate()
+  const { login } = useAuth()
 
   const [formData, setFormData] = useState({
-    email: "",
-    password: "",
+    email: role === 'admin' ? 'admin@example.com' : 'johndoe@example.com',
+    password: '123456',
   });
 
   const [status, setStatus] = useState({
@@ -32,17 +33,24 @@ const LoginForm = ({ role, title, subtitle }) => {
     setStatus((prev) => ({ ...prev, showPassword: !prev.showPassword }))
   }
 
-  // ========= Submit func =========
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
+    setStatus(p => ({ ...p, loading: true, error: '' }))
+    await new Promise(r => setTimeout(r, 600))
+    const userData = role === 'admin' ? dummyAdminDashboardData : dummyEmployeeDashboardData
+    login(role.toUpperCase(), userData)
+    setStatus(p => ({ ...p, loading: false }))
+    navigate(role === 'admin' ? '/admin/dashboard' : '/employee/dashboard')
   }
 
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
-      <LoginLeft />
+      <div className="hidden md:flex w-1/2 shrink-0">
+        <LoginLeft />
+      </div>
 
-      <div className="flex-1 flex items-center justify-center p-6 sm:p-12 bg-gray-50">
+      <div className="flex-1 flex items-center justify-center p-6 sm:p-12 bg-background">
         <div className="w-full max-w-md animate-fade-in">
 
           {/* ========== Back Btn ========== */}
@@ -106,7 +114,7 @@ const LoginForm = ({ role, title, subtitle }) => {
             {/* ========== Submit btn ========== */}
             <button type="submit"
               disabled={status.loading}
-              className="w-full py-3 bg-linear-to-r from-brand-accent/90 to-brand-secondary/90 text-gray-200 rounded-md text-sm font-semibold hover:from-brand-accent hover:to-brand-secondary disabled:opacity-50 transition-all duration-200 shadow-lg shadow-brand-primary/40 active:scale-[0.98] flex justify-center items-center cursor-pointer">
+              className="w-full py-3 bg-surface-dark text-white rounded-md text-sm font-semibold hover:bg-surface-dark/90 disabled:opacity-50 transition-colors flex justify-center items-center cursor-pointer">
               {status.loading ? <Loader2Icon className='animate-spin size-4 mr-2' /> : 'Log in'}
             </button>
 

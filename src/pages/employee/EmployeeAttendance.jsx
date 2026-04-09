@@ -7,8 +7,9 @@ import { stats, attendance, isWorking } from '@/features/attendance/attendanceDa
 import { LogOutIcon } from 'lucide-react'
 
 const statusStyle = {
-  Late:          'bg-yellow-50 text-yellow-700 border-yellow-200',
-  'In Progress': 'bg-brand-muted text-brand border-brand/20',
+  PRESENT: 'bg-green-50 text-green-700 border-green-200',
+  LATE:    'bg-yellow-50 text-yellow-700 border-yellow-200',
+  ABSENT:  'bg-red-50 text-red-600 border-red-200',
 }
 
 const Attendance = () => (
@@ -63,7 +64,7 @@ const Attendance = () => (
                     {row.isOngoing && <span className="ml-1.5 text-xs text-muted-foreground">ongoing</span>}
                   </TableCell>
                   <TableCell className="px-6 py-4">
-                    <span className="font-outfit font-normal text-xs text-[#007A55] bg-[#ECFDF5] shadow-[0_0_0_1px_rgba(0,153,102,0.1)] rounded-md px-2.5 py-1">{row.dayType}</span>
+                    <span className={`font-outfit font-normal text-xs rounded-md px-2.5 py-1 ${row.dayTypeClass}`}>{row.dayType}</span>
                   </TableCell>
                   <TableCell className="px-6 py-4">
                     <Badge variant="outline" className={statusStyle[row.status] ?? ''}>{row.status}</Badge>

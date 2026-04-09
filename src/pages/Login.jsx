@@ -1,59 +1,54 @@
-// app/page.tsx or pages/index.tsx
+import { useNavigate } from 'react-router-dom'
+import { ArrowRightIcon, UserIcon } from 'lucide-react'
+import LoginLeft from '@/components/login/LoginLeft'
+import { ShieldIcon } from 'lucide-react'
 
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { ArrowRight } from "lucide-react"
+const portals = [
+  { label: 'Admin Portal',    role: 'admin',    icon: ShieldIcon, desc: 'Manage employees, payroll and operations' },
+  { label: 'Employee Portal', role: 'employee', icon: UserIcon,   desc: 'View attendance, leaves and payslips'     },
+]
 
-const LoginPage = () => {
+const Login = () => {
+  const navigate = useNavigate()
+
   return (
-    <div className="min-h-screen grid grid-cols-1 md:grid-cols-2">
-      
-      {/* LEFT SIDE */}
-      <div className="bg-[#1E1B4B] text-white flex flex-col justify-center px-10 md:px-20">
-        <h1 className="text-4xl md:text-5xl font-bold leading-tight mb-6">
-          Employee <br /> Management System
-        </h1>
+    <div className="h-screen grid grid-cols-1 lg:grid-cols-2">
 
-        <p className="text-gray-300 max-w-md">
-          Streamline your workforce operations, track attendance,
-          manage payroll, and empower your team securely.
-        </p>
-      </div>
+      <LoginLeft />
 
-      {/* RIGHT SIDE */}
-      <div className="flex items-center justify-center bg-gray-50 px-6">
-        <div className="w-full max-w-md space-y-6">
-          
-          <div className="text-center">
+      {/* Right */}
+      <div className="flex items-center justify-center bg-background px-6">
+        <div className="w-full max-w-sm space-y-6">
+
+          <div>
             <h2 className="text-2xl font-semibold">Welcome Back</h2>
-            <p className="text-gray-500 text-sm mt-2">
-              Select your portal to securely access the system.
-            </p>
+            <p className="text-sm text-muted-foreground mt-1">Select your portal to continue.</p>
           </div>
 
-          {/* Admin Portal */}
-          <Card className="hover:shadow-md transition cursor-pointer">
-            <CardContent className="flex items-center justify-between p-5">
-              <span className="font-medium">Admin Portal</span>
-              <ArrowRight className="w-5 h-5 text-gray-400" />
-            </CardContent>
-          </Card>
+          <div className="space-y-3">
+            {portals.map(({ label, role, icon: Icon, desc }) => (
+              <button key={role} onClick={() => navigate(`/login/${role}`)}
+                className="w-full flex items-center justify-between p-4 rounded-lg border border-[rgba(226,232,240,0.7)] bg-card hover:border-brand/40 hover:bg-brand-muted/30 transition-all group">
+                <div className="flex items-center gap-3">
+                  <div className="size-9 rounded-lg bg-brand-muted flex items-center justify-center shrink-0">
+                    <Icon className="size-4 text-brand" />
+                  </div>
+                  <div className="text-left">
+                    <p className="text-sm font-medium">{label}</p>
+                    <p className="text-xs text-muted-foreground">{desc}</p>
+                  </div>
+                </div>
+                <ArrowRightIcon className="size-4 text-muted-foreground group-hover:text-brand transition-colors" />
+              </button>
+            ))}
+          </div>
 
-          {/* Employee Portal */}
-          <Card className="hover:shadow-md transition cursor-pointer">
-            <CardContent className="flex items-center justify-between p-5">
-              <span className="font-medium">Employee Portal</span>
-              <ArrowRight className="w-5 h-5 text-gray-400" />
-            </CardContent>
-          </Card>
-
-          <p className="text-xs text-center text-gray-400 pt-4">
-            © 2026 GreatStack. All rights reserved.
-          </p>
+          <p className="text-xs text-center text-muted-foreground">© 2026 TalentNode. All rights reserved.</p>
         </div>
       </div>
+
     </div>
   )
 }
 
-export default LoginPage
+export default Login

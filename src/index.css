@@ -52,7 +52,8 @@
   --radius-4xl: calc(var(--radius) * 2.6);
   --color-brand: #4F46E5;
   --color-brand-muted: #EEF2FF;
-  --color-sidebar-bg: #0F172A;
+  --color-surface-dark: #0F172A;
+  --color-sidebar-bg: var(--color-surface-dark);
   --color-sidebar-border: #1E293B;
   --color-sidebar-muted: #1E293B;
   --color-sidebar-fg: #F1F5F9;

@@ -1,21 +1,28 @@
 import { HeartPulseIcon, BriefcaseIcon, PalmtreeIcon } from 'lucide-react'
+import { dummyLeaveData } from '@/dummyData'
+
+const fmt = (d) => new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+
+const typeMap = {
+  SICK:    { label: 'Sick',   icon: HeartPulseIcon },
+  CASUAL:  { label: 'Casual', icon: BriefcaseIcon  },
+  ANNUAL:  { label: 'Annual', icon: PalmtreeIcon   },
+}
 
 export const summary = [
-  { type: 'Sick Leave',   taken: 0, icon: HeartPulseIcon },
-  { type: 'Casual Leave', taken: 1, icon: BriefcaseIcon  },
-  { type: 'Annual Leave', taken: 0, icon: PalmtreeIcon   },
+  { type: 'Sick Leave',   taken: dummyLeaveData.filter(l => l.type === 'SICK').length,   icon: HeartPulseIcon },
+  { type: 'Casual Leave', taken: dummyLeaveData.filter(l => l.type === 'CASUAL').length, icon: BriefcaseIcon  },
+  { type: 'Annual Leave', taken: dummyLeaveData.filter(l => l.type === 'ANNUAL').length, icon: PalmtreeIcon   },
 ]
 
-export const leaves = [
-  {
-    id: '1',
-    type: 'Casual',
-    startDate: 'Apr 02, 2026',
-    endDate: 'Apr 03, 2026',
-    reason: 'Just a casual leave',
-    status: 'approved',
-  },
-]
+export const leaves = dummyLeaveData.map(l => ({
+  id: l._id,
+  type: typeMap[l.type]?.label ?? l.type,
+  startDate: fmt(l.startDate),
+  endDate: fmt(l.endDate),
+  reason: l.reason,
+  status: l.status.toLowerCase(),
+}))
 
 export const typeStyle = {
   Sick:   'bg-red-50 text-red-600 border-red-200',

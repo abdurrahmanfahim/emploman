@@ -1,31 +1,36 @@
-import { FileTextIcon } from 'lucide-react';
-import { SettingsIcon } from 'lucide-react';
-import { XIcon } from 'lucide-react';
-import { LogOutIcon } from 'lucide-react';
-import { ChevronRightIcon } from 'lucide-react';
-import { DollarSignIcon } from 'lucide-react';
-import { CalendarIcon } from 'lucide-react';
-import { UserIcon } from 'lucide-react';
-import { LayoutGridIcon } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { FileTextIcon, SettingsIcon, XIcon, LogOutIcon, ChevronRightIcon, DollarSignIcon, CalendarIcon, UserIcon, LayoutGridIcon, UsersIcon } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '@/context/AuthContext';
 
-const SidebarContent = ({ pathname, username, setMobileOpen }) => {
+const SidebarContent = ({ pathname, setMobileOpen }) => {
+    const { auth, logout } = useAuth()
+    const navigate = useNavigate()
+    const role = auth?.role ?? 'EMPLOYEE'
+    const username = auth?.user?.employee
+      ? `${auth.user.employee.firstName} ${auth.user.employee.lastName}`
+      : role === 'ADMIN' ? 'Admin' : 'Employee'
 
-    // ========= Nav items data ========
-    const role = "" || "EMPLOYEE";
+    const employeeNav = [
+        { name: "Dashboard", href: "/employee/dashboard",  icon: LayoutGridIcon },
+        { name: "Attendance", href: "/employee/attendance", icon: CalendarIcon   },
+        { name: "Leave",      href: "/employee/leave",      icon: FileTextIcon   },
+        { name: "Payslips",   href: "/employee/payslips",   icon: DollarSignIcon },
+        { name: "Settings",   href: "/employee/settings",   icon: SettingsIcon   },
+    ]
 
-    const navItems = [
-        { name: "Dashboard", href: "/dashboard", icon: LayoutGridIcon },
-        role === "ADMIN"
-            ? { name: "Employees", href: "/employees", icon: UserIcon }
-            : { name: "Attendance", href: "/attendance", icon: CalendarIcon },
-        { name: "Leave", href: "/leave", icon: FileTextIcon },
-        { name: "Payslips", href: "/payslips", icon: DollarSignIcon },
-        { name: "Settings", href: "/settings", icon: SettingsIcon },
-    ];
+    const adminNav = [
+        { name: "Dashboard",  href: "/admin/dashboard",  icon: LayoutGridIcon },
+        { name: "Employees",  href: "/admin/employees",  icon: UserIcon       },
+        { name: "Leave",      href: "/admin/leave",      icon: FileTextIcon   },
+        { name: "Payslips",   href: "/admin/payslips",   icon: DollarSignIcon },
+        { name: "Settings",   href: "/admin/settings",   icon: SettingsIcon   },
+    ]
+
+    const navItems = role === 'ADMIN' ? adminNav : employeeNav
 
     const handleLogout = () => {
-        window.location.href = '/login'
+        logout()
+        navigate('/login')
     }
 
     return (
@@ -34,9 +39,11 @@ const SidebarContent = ({ pathname, username, setMobileOpen }) => {
             <div className="px-5 pt-6 pb-5 border-b border-sidebar-border">
                 <div className="flex items-center justify-between">
                     <div className='flex items-center gap-3'>
-                        <img className='w-10' src="/assets/images/logo.png" alt="logo" />
+                        <div className='size-10 rounded-lg bg-brand flex items-center justify-center shrink-0'>
+                            <UsersIcon className='size-5 text-white' />
+                        </div>
                         <div>
-                            <h5 className='font-semibold text-sm text-sidebar-fg tracking-wide'>TeamTracker</h5>
+                            <h5 className='font-semibold text-sm text-sidebar-fg tracking-wide'>TalentNode</h5>
                             <p className='text-xs text-sidebar-muted-fg'>Employee Management</p>
                         </div>
                     </div>

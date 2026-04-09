@@ -7,7 +7,6 @@ import SidebarContent from "./SidebarContent"
 const Sidebar = () => {
 
     const { pathname } = useLocation()
-    const [username, setUsername] = useState('Nasar Uddin')
     const [mobileOpen, setMobileOpen] = useState(false)
 
 
@@ -34,12 +33,12 @@ const Sidebar = () => {
 
             {/* ============ Sidebar Desktop ============ */}
             <aside className="hidden lg:flex flex-col h-full w-64 bg-sidebar-bg shrink-0 border-r border-sidebar-border">
-                <SidebarContent pathname={pathname} username={username}/>
+                <SidebarContent pathname={pathname} />
             </aside>
 
             {/* ============ Sidebar Mobile ============ */}
             <aside className={`lg:hidden fixed inset-y-0 left-0 w-64 bg-sidebar-bg z-50 flex flex-col border-r border-sidebar-border transition-transform duration-300 ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-                <SidebarContent pathname={pathname} username={username} setMobileOpen={setMobileOpen}/>
+                <SidebarContent pathname={pathname} setMobileOpen={setMobileOpen}/>
             </aside>
         </>
     )
