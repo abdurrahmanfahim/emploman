@@ -30,7 +30,7 @@ const Sidebar = () => {
             </button>
 
             {/* ============ Mobile overlay ============ */}
-            <div onClick={handleMobileSidebar} className="lg:hidden fixed inset-0 bg-black/40 z-40"></div>
+            {mobileOpen && <div onClick={handleMobileSidebar} className="lg:hidden fixed inset-0 bg-black/40 z-40"></div>}
 
             {/* ============ Sidebar Desktop ============ */}
             <aside className="hidden lg:flex flex-col h-full w-64 bg-sidebar-bg shrink-0 border-r border-sidebar-border">
