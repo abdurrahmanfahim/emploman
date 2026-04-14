@@ -1,18 +1,19 @@
-import dns from "dns";
 import cors from "cors";
+import dns from "dns";
 import "dotenv/config";
 import express from "express";
+import multer from "multer";
+import connectDB from "./config/db.js";
+import attendanceRouter from "./routes/attendance.js";
+import authRouter from "./routes/authRoutes.js";
+import employeeRouter from "./routes/employeeRoutes.js";
+import leaveRouter from "./routes/leaveRoutes.js";
+import payslipRouter from "./routes/payslipRoute.js";
+import profileRouter from "./routes/profileRoutes.js";
+import dashboardRouter from "./routes/dashboardRoute.js";
 
 dns.setDefaultResultOrder("ipv4first");
 dns.setServers(["1.1.1.1", "1.0.0.1"]);
-import multer from "multer";
-import connectDB from "./config/db.js";
-import authRouter from "./routes/authRoutes.js";
-import employeeRouter from "./routes/employeeRoutes.js";
-import profileRouter from "./routes/profileRoutes.js";
-import attendanceRouter from "./routes/attendance.js";
-import leaveRouter from "./routes/leaveRoutes.js";
-import payslipRouter from "./routes/payslipRoute.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -23,7 +24,7 @@ app.use(express.json());
 app.use(multer().none());
 
 // Routes
-app.get("/", (req, res) =>
+app.get("/", (_req, res) =>
   res.status(200).json({ message: "Server is running" }),
 );
 app.use("/api/v1/auth", authRouter)
@@ -32,6 +33,7 @@ app.use("/api/v1/profile", profileRouter)
 app.use("/api/v1/attendance", attendanceRouter)
 app.use("/api/v1/leave", leaveRouter)
 app.use("/api/v1/payslip", payslipRouter)
+app.use("/api/v1/dashboard", dashboardRouter)
 
 // Connect to MongoDB
 connectDB();

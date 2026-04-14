@@ -50,7 +50,7 @@ export const createLeave = async (req, res) => {
     await leave.save();
     return res.json({ success: true });
   } catch (error) {
-    console.log("Failed to apply leave: ", error);
+    console.error("Failed to apply leave: ", error);
     return res
       .status(500)
       .json({ message: "Failed to apply leave. Please try again." });
@@ -104,7 +104,7 @@ export const getLeave = async (req, res) => {
       });
     }
   } catch (error) {
-    console.log("Failed to get leave: ", error);
+    console.error("Failed to get leave: ", error);
     return res
       .status(500)
       .json({ message: "Failed to get leave. Please try again." });
@@ -123,7 +123,7 @@ export const updateLeaveStatus = async (req, res) => {
     const leave = await LeaveApplication.findByIdAndUpdate(req.params.id, { status }, { returnDocument: "after" })
     return res.json({ success: true, data: leave })
   } catch (error) {
-    console.log("Failed to update leave: ", error);
+    console.error("Failed to update leave: ", error);
     return res
       .status(500)
       .json({ message: "Failed to update leave. Please try again." });

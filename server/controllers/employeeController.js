@@ -1,5 +1,5 @@
-import Employee from "../models/Employee.js";
 import bcrypt from "bcrypt";
+import Employee from "../models/Employee.js";
 import User from "../models/User.js";
 
 // Get Employee
@@ -25,7 +25,7 @@ export const getEmployees = async (req, res) => {
 
     return res.json(result);
   } catch (error) {
-    console.log("error while fetching employees");
+    console.error("error while fetching employees");
     return res.status(500).json({ error: "Failed to fetch employees" });
   }
 };
@@ -157,7 +157,7 @@ export const deleteEmployee = async (req, res) => {
 
     return res.json({ success: true });
   } catch (error) {
-    console.log({ error: "Failed to delete employee" });
+    console.error("Failed to delete employee: ", error);
     return res.status(500).json({ error: "Failed to delete employee" });
   }
 };

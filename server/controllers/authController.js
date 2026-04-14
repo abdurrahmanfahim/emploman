@@ -1,6 +1,6 @@
+import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
-import bcrypt from "bcrypt";
 
 // Login for employees and admin
 // POST /api/v1/auth/Login
@@ -67,7 +67,7 @@ export const changePassword = async (req, res) => {
     await User.findByIdAndUpdate(session.userId, { password: hashed })
     return res.json({ success: true, message: "Password changed successfully" })
   } catch (error) {
-    console.log("error while changing password: ", error)
+    console.error("error while changing password: ", error)
     return res.status(500).json({ error: "Failed to change password" })
   }
 }

@@ -24,7 +24,7 @@ export const createPayslip = async (req, res) => {
 
     return res.json({ success: true, data: payslip })
   } catch (error) {
-    console.log('Error white creating payslip: ', error)
+    console.error('Error white creating payslip: ', error)
     return res.status(500).json({ error: "Payslip Creation Failed." })
   }
 };
@@ -58,7 +58,7 @@ export const getPayslip = async (req, res) => {
       return res.json({data: payslip})
     }
   } catch (error) {
-    console.log('Error white getting payslips: ', error)
+    console.error('Error white getting payslips: ', error)
     return res.status(500).json({error: "Failed to get payslips."})
   }
 }
@@ -78,7 +78,7 @@ export const getPayslipById = async (req, res) => {
     return res.json({data: result})
     
   } catch (error) {
-    console.log('Error white getting payslip: ', error)
+    console.error('Error white getting payslip: ', error)
     return res.status(500).json({error: "Failed to get payslip."})
   }
 }
