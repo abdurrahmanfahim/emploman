@@ -12,6 +12,10 @@ import payslipRouter from "./routes/payslipRoute.js";
 import profileRouter from "./routes/profileRoutes.js";
 import dashboardRouter from "./routes/dashboardRoute.js";
 
+import { serve } from "inngest/express";
+import { inngest, functions } from "./inngest/index.js"
+
+
 dns.setDefaultResultOrder("ipv4first");
 dns.setServers(["1.1.1.1", "1.0.0.1"]);
 
@@ -34,6 +38,8 @@ app.use("/api/v1/attendance", attendanceRouter)
 app.use("/api/v1/leave", leaveRouter)
 app.use("/api/v1/payslip", payslipRouter)
 app.use("/api/v1/dashboard", dashboardRouter)
+
+app.use("/api/inngest", serve({ client: inngest, functions }));
 
 // Connect to MongoDB
 connectDB();
