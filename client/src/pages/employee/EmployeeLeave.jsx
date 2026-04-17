@@ -1,15 +1,50 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { summary, leaves, statusStyle, typeStyle } from '@/features/leave/leaveData'
+import { BriefcaseIcon, HeartPulseIcon, PalmtreeIcon, PlusIcon } from 'lucide-react'
 import ApplyLeaveModal from '@/features/leave/components/ApplyLeaveModal'
-import { PlusIcon } from 'lucide-react'
+import api from '@/lib/api'
 
-const Leave = () => {
+const fmt = (d) => new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+
+const typeStyle = {
+  SICK:   'bg-red-50 text-red-600 border-red-200',
+  CASUAL: 'bg-blue-50 text-blue-600 border-blue-200',
+  ANNUAL: 'bg-green-50 text-green-700 border-green-200',
+}
+
+const statusStyle = {
+  APPROVED: 'bg-green-50 text-green-700 border-green-200',
+  PENDING:  'bg-yellow-50 text-yellow-700 border-yellow-200',
+  REJECTED: 'bg-red-50 text-red-600 border-red-200',
+}
+
+const EmployeeLeave = () => {
+  const [leaves, setLeaves] = useState([])
+  const [loading, setLoading] = useState(true)
   const [modalOpen, setModalOpen] = useState(false)
+
+  const fetchLeaves = async () => {
+    try {
+      const res = await api.get('/leave')
+      setLeaves(res.data.data)
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => { fetchLeaves() }, [])
+
+  const summary = [
+    { type: 'Sick Leave',   taken: leaves.filter(l => l.type === 'SICK').length,   icon: HeartPulseIcon },
+    { type: 'Casual Leave', taken: leaves.filter(l => l.type === 'CASUAL').length, icon: BriefcaseIcon  },
+    { type: 'Annual Leave', taken: leaves.filter(l => l.type === 'ANNUAL').length, icon: PalmtreeIcon   },
+  ]
 
   return (
     <div className="space-y-8">
@@ -36,7 +71,7 @@ const Leave = () => {
                 <div>
                   <p className="text-xs text-muted-foreground">{type}</p>
                   <p className="text-2xl font-semibold leading-none mt-1">
-                    {taken} <span className="text-sm font-normal text-muted-foreground">taken</span>
+                    {loading ? '—' : taken} <span className="text-sm font-normal text-muted-foreground">taken</span>
                   </p>
                 </div>
               </CardContent>
@@ -50,39 +85,39 @@ const Leave = () => {
           <p className="font-outfit text-base font-semibold text-[#0F172B]">Leave History</p>
         </div>
         <CardContent className="p-0">
-          <ScrollArea>
-            <Table className="w-full">
-              <TableHeader>
-                <TableRow className="hover:bg-transparent">
-                  {['Type', 'Dates', 'Reason', 'Status'].map(h => (
-                    <TableHead key={h} className="px-6 py-4 bg-[rgba(248,250,252,0.8)] font-outfit font-bold text-xs uppercase tracking-[0.6px] text-[#62748E]">{h}</TableHead>
-                  ))}
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {leaves.map((row) => (
-                  <TableRow key={row.id} className="hover:bg-muted/30 transition-colors border-t border-[rgba(226,232,240,0.7)]">
-                    <TableCell className="px-6 py-4">
-                      <Badge variant="outline" className={typeStyle[row.type] ?? 'bg-muted text-muted-foreground border-border'}>{row.type}</Badge>
-                    </TableCell>
-                    <TableCell className="px-6 py-[17.75px] font-outfit font-normal text-sm text-[#45556C]">{row.startDate} – {row.endDate}</TableCell>
-                    <TableCell className="px-6 py-[17.75px] font-outfit font-normal text-sm text-[#45556C]">{row.reason}</TableCell>
-                    <TableCell className="px-6 py-4">
-                      <Badge variant="outline" className={statusStyle[row.status]}>
-                        {row.status.charAt(0).toUpperCase() + row.status.slice(1)}
-                      </Badge>
-                    </TableCell>
+          {loading ? <p className="text-sm text-muted-foreground p-6">Loading...</p> : (
+            <ScrollArea>
+              <Table className="w-full">
+                <TableHeader>
+                  <TableRow className="hover:bg-transparent">
+                    {['Type', 'Dates', 'Reason', 'Status'].map(h => (
+                      <TableHead key={h} className="px-6 py-4 bg-[rgba(248,250,252,0.8)] font-outfit font-bold text-xs uppercase tracking-[0.6px] text-[#62748E]">{h}</TableHead>
+                    ))}
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </ScrollArea>
+                </TableHeader>
+                <TableBody>
+                  {leaves.map((row) => (
+                    <TableRow key={row._id} className="hover:bg-muted/30 transition-colors border-t border-[rgba(226,232,240,0.7)]">
+                      <TableCell className="px-6 py-4">
+                        <Badge variant="outline" className={typeStyle[row.type] ?? ''}>{row.type}</Badge>
+                      </TableCell>
+                      <TableCell className="px-6 py-[17.75px] font-outfit text-sm text-[#45556C]">{fmt(row.startDate)} – {fmt(row.endDate)}</TableCell>
+                      <TableCell className="px-6 py-[17.75px] font-outfit text-sm text-[#45556C]">{row.reason}</TableCell>
+                      <TableCell className="px-6 py-4">
+                        <Badge variant="outline" className={statusStyle[row.status] ?? ''}>{row.status}</Badge>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </ScrollArea>
+          )}
         </CardContent>
       </Card>
 
-      <ApplyLeaveModal open={modalOpen} onOpenChange={setModalOpen} />
+      <ApplyLeaveModal open={modalOpen} onOpenChange={setModalOpen} onSuccess={fetchLeaves} />
     </div>
   )
 }
 
-export default Leave
+export default EmployeeLeave

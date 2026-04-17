@@ -3,16 +3,16 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { EyeIcon, EyeOffIcon, KeyRoundIcon, LockIcon } from 'lucide-react'
-
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import api from '@/lib/api'
 
 const schema = z.object({
-  current:  z.string().min(1, 'Current password is required'),
-  next:     z.string().min(8, 'Password must be at least 8 characters'),
-  confirm:  z.string().min(1, 'Please confirm your password'),
+  current: z.string().min(1, 'Current password is required'),
+  next:    z.string().min(8, 'Password must be at least 8 characters'),
+  confirm: z.string().min(1, 'Please confirm your password'),
 }).refine(d => d.next === d.confirm, {
   message: 'Passwords do not match',
   path: ['confirm'],
@@ -32,16 +32,25 @@ const PasswordInput = ({ field }) => {
 
 const ChangePasswordModal = ({ open, onOpenChange }) => {
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState(false)
 
   const form = useForm({ resolver: zodResolver(schema), defaultValues: { current: '', next: '', confirm: '' } })
 
   const onSubmit = async (data) => {
     setLoading(true)
-    console.log('Change password:', data)
-    await new Promise(r => setTimeout(r, 800))
-    setLoading(false)
-    onOpenChange(false)
-    form.reset()
+    setError('')
+    setSuccess(false)
+    try {
+      await api.post('/auth/change-password', { currentPassword: data.current, newPassword: data.next })
+      setSuccess(true)
+      form.reset()
+      setTimeout(() => { onOpenChange(false); setSuccess(false) }, 1200)
+    } catch (err) {
+      setError(err.response?.data?.error || 'Failed to change password')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -59,9 +68,11 @@ const ChangePasswordModal = ({ open, onOpenChange }) => {
           </div>
         </DialogHeader>
 
+        {error && <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-md px-3 py-2">{error}</p>}
+        {success && <p className="text-sm text-green-600 bg-green-50 border border-green-200 rounded-md px-3 py-2">Password updated successfully!</p>}
+
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-2">
-
             {['current', 'next', 'confirm'].map((name, i) => (
               <FormField key={name} control={form.control} name={name} render={({ field }) => (
                 <FormItem>
@@ -78,7 +89,6 @@ const ChangePasswordModal = ({ open, onOpenChange }) => {
                 {loading ? 'Saving...' : <><KeyRoundIcon className="size-3.5" /> Update Password</>}
               </Button>
             </div>
-
           </form>
         </Form>
       </DialogContent>

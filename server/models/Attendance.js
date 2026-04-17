@@ -6,7 +6,6 @@ const attendanceSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Employee",
       required: true,
-      unique: true,
     },
     date: { type: Date, required: true },
     checkIn: { type: Date, default: null },

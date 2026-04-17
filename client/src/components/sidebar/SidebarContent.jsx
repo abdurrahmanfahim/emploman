@@ -19,11 +19,12 @@ const SidebarContent = ({ pathname, setMobileOpen }) => {
     ]
 
     const adminNav = [
-        { name: "Dashboard",  href: "/admin/dashboard",  icon: LayoutGridIcon },
-        { name: "Employees",  href: "/admin/employees",  icon: UserIcon       },
-        { name: "Leave",      href: "/admin/leave",      icon: FileTextIcon   },
-        { name: "Payslips",   href: "/admin/payslips",   icon: DollarSignIcon },
-        { name: "Settings",   href: "/admin/settings",   icon: SettingsIcon   },
+        { name: "Dashboard",  href: "/admin/dashboard",   icon: LayoutGridIcon },
+        { name: "Employees",  href: "/admin/employees",   icon: UserIcon       },
+        { name: "Attendance", href: "/admin/attendance",  icon: CalendarIcon   },
+        { name: "Leave",      href: "/admin/leave",       icon: FileTextIcon   },
+        { name: "Payslips",   href: "/admin/payslips",    icon: DollarSignIcon },
+        { name: "Settings",   href: "/admin/settings",    icon: SettingsIcon   },
     ]
 
     const navItems = role === 'ADMIN' ? adminNav : employeeNav

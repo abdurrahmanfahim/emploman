@@ -19,9 +19,9 @@ export const createLeave = async (req, res) => {
       });
     }
 
-    const { leaveType, startDate, endDate } = req.body;
+    const { leaveType, startDate, endDate, reason } = req.body;
 
-    if (!leaveType || !startDate || !endDate) {
+    if (!leaveType || !startDate || !endDate || !reason) {
       return res.status(400).json({ message: "All fields are required." });
     }
 
@@ -41,7 +41,7 @@ export const createLeave = async (req, res) => {
 
     const leave = await LeaveApplication.create({
       employeeId: employee._id,
-      type,
+      type: leaveType,
       startDate: new Date(startDate),
       endDate: new Date(endDate),
       reason,
@@ -50,7 +50,7 @@ export const createLeave = async (req, res) => {
 
     await inngest.send({
       name: "leave/pending",
-      data: { leaveId: leave._id.toString() },
+      data: { leaveApplicationId: leave._id.toString() },
     });
 
     // await leave.save();

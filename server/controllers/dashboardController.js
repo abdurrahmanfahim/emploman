@@ -10,7 +10,7 @@ import Payslip from "../models/Payslip.js";
 export const getDashboard = async (req, res) => {
   try {
     const session = req.session;
-    if (session.userRole === "ADMIN") {
+    if (session.role === "ADMIN") {
       const [totalEmployees, todayAttendance, pendingLeaves] =
         await Promise.all([
           Employee.countDocuments({ isDeleted: { $ne: true } }),

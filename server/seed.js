@@ -7,7 +7,7 @@ import bcrypt from "bcrypt";
 dns.setDefaultResultOrder("ipv4first");
 dns.setServers(["1.1.1.1", "1.0.0.1"]);
 
-const TemporaryPassword = "admin123";
+const TemporaryPassword = process.env.ADMIN_TEMP_PASSWORD || "Admin@123";
 
 async function registerAdmin() {
   try {

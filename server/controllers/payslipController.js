@@ -6,11 +6,11 @@ import Payslip from "../models/Payslip.js";
 export const createPayslip = async (req, res) => {
   try {
     const { employeeId, month, year, basicSalary, allowances, deductions } = req.body;
-    if (!employeeId || !month || !year || !basicSalary || !netSalary) {
+    const netSalary = Number(basicSalary) + Number(allowances || 0) - Number(deductions || 0);
+
+    if (!employeeId || !month || !year || !basicSalary) {
       return res.status(400).json({ message: "Missing required fields" })
     }
-
-    const netSalary = Number(basicSalary) + Number(allowances || 0) - Number(deductions || 0);
 
     const payslip = await Payslip.create({
       employeeId,
@@ -54,7 +54,7 @@ export const getPayslip = async (req, res) => {
         return res.status(404).json({ message: "Employee not found" })
       }
 
-      const payslip = (await Payslip.find({ employeeId: employee._id })).toSorted({ createdAt: -1 })
+      const payslip = await Payslip.find({ employeeId: employee._id }).sort({ createdAt: -1 })
       return res.json({data: payslip})
     }
   } catch (error) {

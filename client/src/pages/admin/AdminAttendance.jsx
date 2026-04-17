@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { CalendarIcon, ClockIcon, LogInIcon, LogOutIcon } from 'lucide-react'
+import { CalendarIcon } from 'lucide-react'
 import api from '@/lib/api'
 import { getDayTypeDisplay, getWorkingHoursDisplay } from '@/dummyData'
 
@@ -17,67 +16,46 @@ const statusStyle = {
 const fmtDate = (d) => new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 const fmtTime = (d) => d ? new Date(d).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : '—'
 
-const EmployeeAttendance = () => {
+const AdminAttendance = () => {
   const [records, setRecords] = useState([])
   const [loading, setLoading] = useState(true)
-  const [clocking, setClocking] = useState(false)
-  const [isDeleted, setIsDeleted] = useState(false)
+  const [employees, setEmployees] = useState([])
+  const [selectedEmp, setSelectedEmp] = useState('')
 
-  const fetchAttendance = async () => {
-    try {
-      const res = await api.get('/attendance')
-      setRecords(res.data.data)
-      setIsDeleted(res.data.employee?.isDeleted)
-    } catch (err) {
-      console.error(err)
-    } finally {
-      setLoading(false)
-    }
-  }
+  useEffect(() => {
+    api.get('/employees').then(r => setEmployees(r.data)).catch(console.error)
+  }, [])
 
-  useEffect(() => { fetchAttendance() }, [])
+  useEffect(() => {
+    setLoading(true)
+    const url = selectedEmp ? `/attendance?employeeId=${selectedEmp}` : '/attendance'
+    api.get(url).then(r => setRecords(r.data.data ?? [])).catch(console.error).finally(() => setLoading(false))
+  }, [selectedEmp])
 
-  const handleClockInOut = async () => {
-    setClocking(true)
-    try {
-      await api.post('/attendance')
-      fetchAttendance()
-    } catch (err) {
-      console.error(err)
-    } finally {
-      setClocking(false)
-    }
-  }
+  const todayCount = records.filter(r => {
+    const d = new Date(r.date)
+    const now = new Date()
+    return d.toDateString() === now.toDateString()
+  }).length
 
-  const isWorking = records.some(r => r.checkIn && !r.checkOut)
-  const daysPresent = records.filter(r => r.status === 'PRESENT' || r.status === 'LATE').length
   const lateCount = records.filter(r => r.status === 'LATE').length
-  const avgHours = records.length
-    ? (records.reduce((a, r) => a + (r.workingHours ?? 0), 0) / records.length).toFixed(1)
-    : '0.0'
-
-  const stats = [
-    { title: 'Days Present',  value: daysPresent,       icon: CalendarIcon },
-    { title: 'Late Arrivals', value: lateCount,          icon: ClockIcon    },
-    { title: 'Avg. Work Hrs', value: `${avgHours} Hrs`,  icon: ClockIcon    },
-  ]
 
   return (
-    <div className="space-y-8 pb-24">
+    <div className="space-y-8">
 
       <div className="pb-6 border-b border-border">
         <h1 className="text-2xl font-semibold">Attendance</h1>
-        <p className="text-sm text-muted-foreground mt-1">Track your work hours and daily check-ins</p>
+        <p className="text-sm text-muted-foreground mt-1">Monitor employee attendance records</p>
       </div>
 
       <div className="space-y-3">
         <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Overview</p>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          {stats.map(({ title, value, icon: Icon }) => (
+          {[["Today's Check-ins", todayCount], ['Total Records', records.length], ['Late Arrivals', lateCount]].map(([title, value]) => (
             <Card key={title} className="border border-[rgba(226,232,240,0.7)] shadow-none py-0">
               <CardContent className="flex items-center gap-4 p-5">
                 <div className="size-10 rounded-lg bg-brand-muted flex items-center justify-center shrink-0">
-                  <Icon className="size-4 text-brand" />
+                  <CalendarIcon className="size-4 text-brand" />
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground">{title}</p>
@@ -90,8 +68,16 @@ const EmployeeAttendance = () => {
       </div>
 
       <Card className="border border-[rgba(226,232,240,0.7)] shadow-none rounded-lg py-0 gap-0">
-        <div className="px-6 py-4 border-b border-[rgba(226,232,240,0.7)]">
-          <p className="font-outfit text-base font-semibold text-[#0F172B]">Recent Activity</p>
+        <div className="px-6 py-4 border-b border-[rgba(226,232,240,0.7)] flex items-center justify-between">
+          <p className="font-outfit text-base font-semibold text-[#0F172B]">Attendance Records</p>
+          <select
+            value={selectedEmp}
+            onChange={e => setSelectedEmp(e.target.value)}
+            className="text-sm border border-[rgba(226,232,240,0.7)] rounded-md px-3 py-1.5 bg-background outline-none focus:border-brand"
+          >
+            <option value="">All Employees</option>
+            {employees.map(e => <option key={e._id} value={e._id}>{e.firstName} {e.lastName}</option>)}
+          </select>
         </div>
         <CardContent className="p-0">
           {loading ? <p className="text-sm text-muted-foreground p-6">Loading...</p> : (
@@ -129,20 +115,8 @@ const EmployeeAttendance = () => {
         </CardContent>
       </Card>
 
-      {!isDeleted && (
-        <div className="fixed bottom-6 right-6 z-50">
-          <Button size="sm" disabled={clocking} onClick={handleClockInOut} className="shadow-md gap-2 pl-3 pr-4 h-10">
-            {isWorking ? <LogOutIcon className="size-4" /> : <LogInIcon className="size-4" />}
-            <div className="text-left">
-              <p className="text-xs font-semibold leading-none">{isWorking ? 'Clock Out' : 'Clock In'}</p>
-              <p className="text-[10px] opacity-60 mt-0.5">{isWorking ? 'Click to end your shift' : 'Click to start your shift'}</p>
-            </div>
-          </Button>
-        </div>
-      )}
-
     </div>
   )
 }
 
-export default EmployeeAttendance
+export default AdminAttendance

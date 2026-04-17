@@ -1,4 +1,4 @@
-import Router from "express";
+import { Router } from "express";
 import { protect } from "../middlewares/auth.js";
 import { getDashboard } from "../controllers/dashboardController.js";
 

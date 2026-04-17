@@ -113,15 +113,13 @@ const leaveApplicationReminder = inngest.createFunction(
 
 // Cron: Check attendance at 11:30 AM IST (06:00 UTC) and email absent employees
 const attendanceReminderCron = inngest.createFunction(
-  { id: "attendance-reminder-cron", triggers: [{ cron: "0 0 6 * * *" }] }, //06:00 UTC = 11:00 AM IST
+  { id: "attendance-reminder-cron", triggers: [{ cron: "0 6 * * *" }] }, // 06:00 UTC = 11:30 AM IST
 
   async ({ step }) => {
-    // Step 1: Get today's date range (IST)
+    // Step 1: Get today's date range (UTC)
     const today = await step.run("get-today-date", () => {
-      const startUTC = new Date(
-        new Date().toLocaleDateString("en-CA", { timeZone: "Asia/dhaka" }),
-        +"T00:00:00 +05:00",
-      );
+      const now = new Date();
+      const startUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
       const endUTC = new Date(startUTC.getTime() + 24 * 60 * 60 * 1000);
       return { startUTC: startUTC.toISOString(), endUTC: endUTC.toISOString() };
     });
@@ -135,7 +133,7 @@ const attendanceReminderCron = inngest.createFunction(
       return employees.map((emp) => ({
         _id: emp._id.toString(),
         firstName: emp.firstName,
-        LastName: emp.LastName,
+        lastName: emp.lastName,
         email: emp.email,
         department: emp.department,
       }));
@@ -168,30 +166,19 @@ const attendanceReminderCron = inngest.createFunction(
     if (absentEmployees.length > 0) {
       // Send email to absent employees
       await step.run("send-reminder-emails", async () => {
-        // Send email promises
-        const emailPromises = absentEmployees.map((emp) => {
-          // Send email
+        await Promise.all(absentEmployees.map((emp) =>
           sendEmail({
             to: emp.email,
             subject: "Attendance Reminder",
             body: `<div style="max-width: 600px; font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-              <h2 style="color: #2c3e50;">Dear ${emp.firstName},</h2>
-              <p style="font-size: 15px;">
-                This is to inform you that you have been marked as <strong>absent</strong> today in the 
-                <strong>${emp.department}</strong> department.
-              </p>
-              <p style="font-size: 15px;">
-                If this is due to an oversight or if you believe this record is incorrect, please reach out to your administrator at your earliest convenience.
-              </p>
-              <p style="font-size: 15px;">
-                We appreciate your prompt attention to this matter.
-              </p>
+              <h2>Dear ${emp.firstName},</h2>
+              <p>You have been marked as <strong>absent</strong> today in the <strong>${emp.department}</strong> department.</p>
+              <p>If this is incorrect, please contact your administrator.</p>
               <br />
-              <p style="font-size: 15px;">Sincerely,</p>
-              <p style="font-size: 15px; font-weight: bold;">TalentNode Team</p>
+              <p>Best Regards,<br/>TalentNode Team</p>
             </div>`,
-          });
-        });
+          })
+        ));
       });
     }
     return {

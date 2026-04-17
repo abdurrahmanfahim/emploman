@@ -17,6 +17,7 @@ import EmployeeSettings from '@/pages/employee/EmployeeSettings'
 // Admin pages
 import AdminDashboard from '@/pages/admin/AdminDashboard'
 import AdminEmployees from '@/pages/admin/Employees'
+import AdminAttendance from '@/pages/admin/AdminAttendance'
 import AdminLeave from '@/pages/admin/AdminLeave'
 import AdminPayslips from '@/pages/admin/AdminPayslips'
 import AdminSettings from '@/pages/admin/AdminSettings'
@@ -48,6 +49,7 @@ function App() {
         <Route element={<Layout />}>
           <Route path="/admin/dashboard"  element={<AdminDashboard />} />
           <Route path="/admin/employees"  element={<AdminEmployees />} />
+          <Route path="/admin/attendance" element={<AdminAttendance />} />
           <Route path="/admin/leave"      element={<AdminLeave />} />
           <Route path="/admin/payslips"   element={<AdminPayslips />} />
           <Route path="/admin/settings"   element={<AdminSettings />} />

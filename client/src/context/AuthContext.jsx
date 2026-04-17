@@ -10,8 +10,8 @@ export const AuthProvider = ({ children }) => {
     } catch { return null }
   })
 
-  const login = (role, user) => {
-    const data = { role, user }
+  const login = (role, user, token) => {
+    const data = { role, user, token }
     setAuth(data)
     localStorage.setItem('auth', JSON.stringify(data))
   }

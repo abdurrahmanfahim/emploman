@@ -1,0 +1,219 @@
+@baseUrl = http://localhost:3000/api/v1
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWUyNTk4NzI3MDhkN2IxN2YyMWIwYWIiLCJyb2xlIjoiQURNSU4iLCJlbWFpbCI6ImZhaGltYWhtYWQxMjNnb0BnbWFpbC5jb20iLCJpYXQiOjE3NzY0NDE3NTUsImV4cCI6MTc3NzA0NjU1NX0.hAf1nMwOx9J7lQi26-sche720QrVLSunNnRvolRrx-E
+
+
+### ==================== AUTH ====================
+
+### Login as Admin
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "fahimahmad123go@gmail.com",
+  "password": "Admin@123",
+  "role_type": "ADMIN"
+}
+
+###
+
+### Login as Employee
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "john.doe@example.com",
+  "password": "Employee@123",
+  "role_type": "EMPLOYEE"
+}
+
+###
+
+### Get Session
+GET {{baseUrl}}/auth/session
+Authorization: Bearer {{token}}
+
+###
+
+### Change Password
+POST {{baseUrl}}/auth/change-password
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "currentPassword": "Employee@123",
+  "newPassword": "NewPass@456"
+}
+
+
+### ==================== EMPLOYEES ====================
+
+### Get All Employees (Admin)
+GET {{baseUrl}}/employees
+Authorization: Bearer {{token}}
+
+###
+
+### Get Employees by Department (Admin)
+GET {{baseUrl}}/employees?department=Engineering
+Authorization: Bearer {{token}}
+
+###
+
+### Create Employee (Admin)
+POST {{baseUrl}}/employees
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "firstName": "John",
+  "lastName": "Doe",
+  "email": "john.doe@example.com",
+  "phone": "01700000000",
+  "position": "Software Engineer",
+  "department": "Engineering",
+  "basicSalary": 50000,
+  "allowances": 5000,
+  "deductions": 2000,
+  "joinDate": "2024-01-01",
+  "password": "Employee@123",
+  "role": "EMPLOYEE",
+  "bio": "A passionate developer."
+}
+
+###
+
+### Update Employee (Admin)
+PUT {{baseUrl}}/employees/EMPLOYEE_ID_HERE
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "firstName": "Johna",
+  "lastName": "Doea",
+  "email": "john.doe@example.com",
+  "phone": "01700000001",
+  "position": "Senior Engineer",
+  "department": "Engineering",
+  "basicSalary": 60000,
+  "allowances": 6000,
+  "deductions": 2500,
+  "employmentStatus": "ACTIVE",
+  "bio": "Updated bio."
+}
+
+###
+
+### Delete Employee (Admin)
+DELETE {{baseUrl}}/employees/EMPLOYEE_ID_HERE
+Authorization: Bearer {{token}}
+
+
+### ==================== PROFILE ====================
+
+### Get Profile
+GET {{baseUrl}}/profile
+Authorization: Bearer {{token}}
+
+###
+
+### Update Profile
+POST {{baseUrl}}/profile
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "bio": "Updated bio from profile page."
+}
+
+
+### ==================== ATTENDANCE ====================
+
+### Clock In / Clock Out
+POST {{baseUrl}}/attendance
+Authorization: Bearer {{token}}
+
+###
+
+### Get Attendance History
+GET {{baseUrl}}/attendance
+Authorization: Bearer {{token}}
+
+###
+
+### Get Attendance History with Limit
+GET {{baseUrl}}/attendance?limit=10
+Authorization: Bearer {{token}}
+
+
+### ==================== LEAVE ====================
+
+### Apply for Leave (Employee)
+POST {{baseUrl}}/leave
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "leaveType": "CASUAL",
+  "startDate": "2025-08-10",
+  "endDate": "2025-08-12",
+  "reason": "Family function"
+}
+
+###
+
+### Get All Leaves
+GET {{baseUrl}}/leave
+Authorization: Bearer {{token}}
+
+###
+
+### Get Leaves by Status (Admin)
+GET {{baseUrl}}/leave?status=PENDING
+Authorization: Bearer {{token}}
+
+###
+
+### Update Leave Status (Admin)
+PATCH {{baseUrl}}/leave/LEAVE_ID_HERE
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "status": "APPROVED"
+}
+
+
+### ==================== PAYSLIP ====================
+
+### Create Payslip (Admin)
+POST {{baseUrl}}/payslip
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "employeeId": "EMPLOYEE_ID_HERE",
+  "month": 7,
+  "year": 2025,
+  "basicSalary": 50000,
+  "allowances": 5000,
+  "deductions": 2000
+}
+
+###
+
+### Get All Payslips
+GET {{baseUrl}}/payslip
+Authorization: Bearer {{token}}
+
+###
+
+### Get Payslip by ID
+GET {{baseUrl}}/payslip/PAYSLIP_ID_HERE
+Authorization: Bearer {{token}}
+
+
+### ==================== DASHBOARD ====================
+
+### Get Dashboard
+GET {{baseUrl}}/dashboard
+Authorization: Bearer {{token}}
